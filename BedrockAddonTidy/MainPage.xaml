@@ -1,9 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BedrockAddonTidy.MainPage">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:cv="clr-namespace:BedrockAddonTidy.Views.ContentViews"
+			 x:Class="BedrockAddonTidy.MainPage">
 
-    <ScrollView>
+	<Grid ColumnDefinitions="300, *">
+		<Border Grid.Column="0"
+				Margin="10"
+				Padding="10"
+				StrokeShape="RoundRectangle 10">
+			<cv:AddonListContentView/>
+		</Border>
+	</Grid>
+
+	<!-- <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
@@ -31,6 +41,6 @@
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill" />
         </VerticalStackLayout>
-    </ScrollView>
+    </ScrollView> -->
 
 </ContentPage>
