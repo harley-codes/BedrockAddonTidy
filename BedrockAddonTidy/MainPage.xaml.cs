@@ -1,9 +1,12 @@
-﻿namespace BedrockAddonTidy;
+﻿using BedrockAddonTidy.Services.AddonFileService;
+
+namespace BedrockAddonTidy;
 
 public partial class MainPage : ContentPage
 {
-	public MainPage()
+	public MainPage(AddonFileService addonFileService)
 	{
 		InitializeComponent();
+		addonFileService.InitializeAddonFiles();
 	}
 }

@@ -28,6 +28,9 @@ public static class MauiProgram
 		builder.Services.AddTransient<AddonListViewModel>();
 		builder.Services.AddTransient<AddonListContentView>();
 
+		builder.Services.AddTransient<AddonEditorViewModel>();
+		builder.Services.AddTransient<AddonEditorContentView>();
+
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif

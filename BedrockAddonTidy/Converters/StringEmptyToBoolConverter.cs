@@ -2,12 +2,13 @@ using System.Globalization;
 
 namespace BedrockAddonTidy.Converters;
 
-public class BoolInvertConverter : IValueConverter
+public class StringEmptyToBoolConverter : IValueConverter
 {
 	public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 	{
 		var invert = parameter as string == "invert";
-		return value is bool b ? (invert ? !b : b) : value;
+		bool isTrue = !string.IsNullOrWhiteSpace(value as string);
+		return invert ? !isTrue : isTrue;
 	}
 
 	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

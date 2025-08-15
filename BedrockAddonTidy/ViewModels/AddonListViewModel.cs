@@ -18,9 +18,6 @@ public partial class AddonListViewModel : ObservableObject
 	[NotifyPropertyChangedFor(nameof(AddonFileListSorted))]
 	private partial ObservableCollection<AddonListItemViewModel> AddonFileList { get; set; } = [];
 
-	[ObservableProperty]
-	public partial bool DisableImportButton { get; set; }
-
 	public List<AddonListItemViewModel> AddonFileListSorted => [.. AddonFileList.OrderByDescending(x => x.AddonFile?.UpdateDate)];
 
 	public AddonListViewModel(AddonFileService addonFileService)
@@ -28,7 +25,26 @@ public partial class AddonListViewModel : ObservableObject
 		_addonFileService = addonFileService;
 		_addonFileService.AddonFilePropertiesChanged += AddonFileService_OnAddonFilePropertiesChanged;
 		_addonFileService.AddonFileValidationWarningsChanged += AddonFileService_OnAddonFileValidationWarningsChanged;
-		_addonFileService.InitializeAddonFiles();
+		_addonFileService.AddonFileSelected += AddonFileService_AddonFileSelected;
+	}
+
+	private void AddonFileService_AddonFileSelected(object? sender, Guid? guid)
+	{
+		if (guid.HasValue && guid.Value == SelectedItem?.AddonId) return;
+
+		if (!guid.HasValue)
+		{
+			SelectedItem = null;
+			return;
+		}
+
+		var addonFile = _addonFileService.GetAddonFile(guid.Value);
+		SelectedItem = new AddonListItemViewModel
+		{
+			AddonId = addonFile.Id,
+			AddonFile = addonFile,
+			AddonWarnings = _addonFileService.GetAddonFileValidationWarnings(guid.Value)
+		};
 	}
 
 	private void AddonFileService_OnAddonFilePropertiesChanged(object? sender, AddonFileEventTypes.AddonFilePropertiesChangedEventArgs e)
@@ -97,8 +113,6 @@ public partial class AddonListViewModel : ObservableObject
 	[RelayCommand]
 	private async Task ImportAddonHandler()
 	{
-		DisableImportButton = true;
-
 		var pickOptions = new PickOptions
 		{
 			FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
@@ -114,8 +128,6 @@ public partial class AddonListViewModel : ObservableObject
 		{
 			_addonFileService.ImportNewAddon(fileResult.FullPath);
 		}
-
-		DisableImportButton = false;
 	}
 
 	partial void OnSelectedItemChanged(AddonListItemViewModel? oldValue, AddonListItemViewModel? newValue)

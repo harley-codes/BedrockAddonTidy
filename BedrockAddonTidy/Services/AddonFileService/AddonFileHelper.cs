@@ -77,6 +77,12 @@ public class AddonFileHelper
 					warnings.Add($"Resource pack GUID '{addonFile.ResourcePackGuid}' is not unique.");
 			}
 
+			if (addonFile.ResourcePackDependencyEnabled && string.IsNullOrEmpty(addonFile.BehaviorPackGuid))
+				warnings.Add("Resource pack dependency is enabled but Behavior Pack is missing.");
+
+			if (addonFile.BehaviorPackDependencyEnabled && string.IsNullOrEmpty(addonFile.ResourcePackGuid))
+				warnings.Add("Behavior pack dependency is enabled but Resource Pack is missing.");
+
 			if (warnings.Count > 0)
 			{
 				validationWarnings[addonId] = [.. warnings];
@@ -204,10 +210,10 @@ public class AddonFileHelper
 						addonFile.ResourcePackGuid = resourceManifest.Header.Uuid;
 						addonFile.ResourcePackVersion = resourceManifest.Header.Version;
 						addonFile.ResourcePackFolderName = manifestParentDirectory;
+						addonFile.ResourcePackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
 						addonFile.ResourcePackDependencyEnabled = resourceManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
 						addonFile.Name ??= resourceManifest.Header.Name;
 						addonFile.Description ??= resourceManifest.Header.Description;
-						addonFile.AnyVersion ??= resourceManifest.Header.Version;
 						break;
 					case "data":
 						var behaviorManifest = JsonSerializer.Deserialize<BehaviorPackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)
@@ -215,11 +221,11 @@ public class AddonFileHelper
 						addonFile.BehaviorPackGuid = behaviorManifest.Header.Uuid;
 						addonFile.BehaviorPackVersion = behaviorManifest.Header.Version;
 						addonFile.BehaviorPackFolderName = manifestParentDirectory;
+						addonFile.BehaviorPackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
 						addonFile.BehaviorPackDependencyEnabled = behaviorManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
 						addonFile.BehaviorPackUsingExperimental = behaviorManifest.Dependencies.Any(x => !string.IsNullOrWhiteSpace(x.ModuleName) && x.ModuleName.Contains("beta"));
 						addonFile.Name ??= behaviorManifest.Header.Name;
 						addonFile.Description ??= behaviorManifest.Header.Description;
-						addonFile.AnyVersion ??= behaviorManifest.Header.Version;
 						break;
 					default:
 						break; // Ignore other module types

@@ -10,5 +10,6 @@
 			   Opacity="0.1"
 			   Aspect="AspectFill"/>
 		<cv:AddonListContentView Grid.Column="0"/>
+		<cv:AddonEditorContentView Grid.Column="1"/>
 	</Grid>
 </ContentPage>

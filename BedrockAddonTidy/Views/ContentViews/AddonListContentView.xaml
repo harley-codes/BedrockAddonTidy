@@ -50,7 +50,7 @@
 										  Padding="5">
 										<Grid
 											Grid.Column="0"
-											RowDefinitions="*,*,*,*,3">
+											RowDefinitions="*,*,*,*">
 											<HorizontalStackLayout Grid.Row="0"
 																   Spacing="5">
 												<Label Text="Name:"
@@ -69,21 +69,13 @@
 											</HorizontalStackLayout>
 											<HorizontalStackLayout Grid.Row="2"
 																   Spacing="5">
-												<Label Text="Version:"
-													   FontAttributes="Bold"
-													   VerticalOptions="Center"/>
-												<Label Text="{Binding AddonFile.AnyVersion}"
-													   VerticalOptions="Center"/>
-											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="3"
-																   Spacing="5">
 												<Label Text="Experimental:"
 													   FontAttributes="Bold"
 													   VerticalOptions="Center"/>
 												<Label Text="{Binding AddonFile.BehaviorPackUsingExperimental}"
 													   VerticalOptions="Center"/>
 											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="4"
+											<HorizontalStackLayout Grid.Row="3"
 																   Spacing="5">
 												<Label Text="Author:"
 													   FontAttributes="Bold"
@@ -95,7 +87,7 @@
 										<Border Grid.Column="1"
 												Margin="5,0,0,0"
 												Padding="0"
-												StrokeShape="RoundRectangle 10"
+												StrokeShape="RoundRectangle 5"
 												StrokeThickness="0">
 											<Image Source="{Binding AddonFile.ImagePath}"/>
 										</Border>

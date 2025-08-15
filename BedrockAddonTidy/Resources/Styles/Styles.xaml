@@ -125,7 +125,7 @@
 		<Setter Property="FontFamily"
 				Value="OpenSansRegular"/>
 		<Setter Property="FontSize"
-				Value="14"/>
+				Value="22"/>
 		<Setter Property="PlaceholderColor"
 				Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
 		<Setter Property="MinimumHeightRequest"
@@ -155,13 +155,14 @@
 		<Setter Property="FontFamily"
 				Value="OpenSansRegular"/>
 		<Setter Property="FontSize"
-				Value="14"/>
+				Value="22"/>
 		<Setter Property="PlaceholderColor"
 				Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"/>
 		<Setter Property="MinimumHeightRequest"
 				Value="44"/>
 		<Setter Property="MinimumWidthRequest"
 				Value="44"/>
+		<!-- <Setter Property="" -->
 		<Setter Property="VisualStateManager.VisualStateGroups">
 			<VisualStateGroupList>
 				<VisualStateGroup x:Name="CommonStates">

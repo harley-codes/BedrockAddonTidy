@@ -18,7 +18,7 @@ public class AddonFileService
 	public delegate void AddonFileValidationWarningsChangedHandler(object? sender, AddonFileEventTypes.AddonFileValidationWarningsChangedEventArgs e);
 	public event AddonFileValidationWarningsChangedHandler? AddonFileValidationWarningsChanged;
 
-	public delegate void AddonFileSelectedHandler(object? sender, Guid guid);
+	public delegate void AddonFileSelectedHandler(object? sender, Guid? guid);
 	public event AddonFileSelectedHandler? AddonFileSelected;
 
 	public AddonFileService()
@@ -68,9 +68,9 @@ public class AddonFileService
 		}
 	}
 
-	public void SelectAddonFile(Guid addonId)
+	public void SelectAddonFile(Guid? addonId)
 	{
-		if (!addonFileProperties.ContainsKey(addonId))
+		if (addonId.HasValue && !addonFileProperties.ContainsKey(addonId.Value))
 			throw new KeyNotFoundException($"Addon file with ID {addonId} not found.");
 		AddonFileSelected?.Invoke(this, addonId);
 	}
