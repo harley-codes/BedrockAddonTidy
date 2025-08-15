@@ -12,7 +12,8 @@ public class AddonFileModel
 	public string? Description { get; set; }
 	public string? Author { get; set; }
 	public string? ImagePath { get; set; }
-
+	public object? AnyVersion { get; set; }
+	public DateTime UpdateDate { get; set; }
 	public string? ResourcePackGuid { get; set; }
 	public object? ResourcePackVersion { get; set; }
 	public string? ResourcePackFolderName { get; set; }
