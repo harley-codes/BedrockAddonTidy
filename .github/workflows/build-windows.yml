@@ -23,7 +23,7 @@ jobs:
         run: dotnet restore BedrockAddonTidy/BedrockAddonTidy.csproj
 
       - name: Build MAUI Windows
-        run: dotnet build BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.17763.0
+        run: dotnet build BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041
 
       - name: Publish MAUI Windows
-        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.17763.0 -o publish
+        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041 -o publish
