@@ -33,3 +33,12 @@ jobs:
         with:
           name: BedrockAddonTidy-win10-x64
           path: BedrockAddonTidy/bin/Release/net9.0-windows10.0.19041.0/win10-x64
+
+      - name: Publish MSIX Installer
+        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041.0 -r win10-x64 /p:GenerateAppInstallerFile=true /p:AppxPackageSigningEnabled=false
+
+      - name: Upload MSIX Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BedrockAddonTidy-MSIX
+          path: BedrockAddonTidy/bin/Release/net9.0-windows10.0.19041.0/win10-x64/AppPackages
