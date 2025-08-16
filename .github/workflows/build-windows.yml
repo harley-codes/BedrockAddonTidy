@@ -27,3 +27,9 @@ jobs:
 
       - name: Publish MAUI Windows
         run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041.0 -o publish
+
+      - name: Upload Windows Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BedrockAddonTidy-win10-x64
+          path: BedrockAddonTidy/bin/Release/net9.0-windows10.0.19041.0/win10-x64
