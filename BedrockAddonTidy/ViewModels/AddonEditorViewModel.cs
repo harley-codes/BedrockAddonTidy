@@ -1,7 +1,9 @@
 using System;
 using BedrockAddonTidy.Services.AddonFileService;
+using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Windows.Storage.Pickers;
 
 namespace BedrockAddonTidy.ViewModels;
 
@@ -78,6 +80,70 @@ public partial class AddonEditorViewModel : ObservableObject
 	}
 
 	[RelayCommand]
+	private async Task DownloadAddonHandler()
+	{
+		if (SelectedAddon is null) return;
+		var page = Application.Current!.Windows[0].Page!;
+		var result = await page.DisplayAlert("Warning", "Are you sure you want download the addon, this will aso save current changes?", "Continue", "Cancel");
+		if (!result) return;
+		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
+
+		var warnings = _addonFileService.GetAddonFileValidationWarnings(SelectedAddon.AddonId);
+		if (warnings.Length > 0)
+		{
+			await page.DisplayAlert("Error", $"Cannot download addon while there are errors.", "OK");
+			return;
+		}
+		var newFileName = $"{SelectedAddon.AddonFile.Name} - {SelectedAddon.AddonFile.Author}.{SelectedAddon.AddonFile.AddonType.ToString().ToLower()}";
+		var fileResult = await FileSaver.Default.SaveAsync(newFileName, Stream.Null, new CancellationToken());
+		if (fileResult.IsSuccessful)
+		{
+			_addonFileService.UpdateAddonSrc(SelectedAddon.AddonFile);
+			_addonFileService.DownloadAddonFile(SelectedAddon.AddonId, fileResult.FilePath);
+			if (File.Exists(fileResult.FilePath))
+			{
+				var parentFolder = Path.GetDirectoryName(fileResult.FilePath);
+				if (parentFolder != null)
+				{
+					await Launcher.Default.OpenAsync(parentFolder);
+				}
+			}
+		}
+		else
+		{
+			await page.DisplayAlert("Error", "Failed to pick the addon file location.", "OK");
+			return;
+		}
+	}
+
+	[RelayCommand]
+	private async Task MinecraftImportAddonHandler()
+	{
+		if (SelectedAddon is null) return;
+		var page = Application.Current!.Windows[0].Page!;
+		var result = await page.DisplayAlert("Warning", "Are you sure you want import the addon into minecraft, this will aso save current changes?", "Continue", "Cancel");
+		if (!result) return;
+		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
+
+		var warnings = _addonFileService.GetAddonFileValidationWarnings(SelectedAddon.AddonId);
+		if (warnings.Length > 0)
+		{
+			await page.DisplayAlert("Error", $"Cannot import addon while there are errors.", "OK");
+			return;
+		}
+		var newFileName = $"{SelectedAddon.AddonFile.Name} - {SelectedAddon.AddonFile.Author} - {Guid.NewGuid()}.{SelectedAddon.AddonFile.AddonType.ToString().ToLower()}";
+
+		var tempFilePath = Path.Combine(Path.GetTempPath(), newFileName);
+
+		_addonFileService.UpdateAddonSrc(SelectedAddon.AddonFile);
+		_addonFileService.DownloadAddonFile(SelectedAddon.AddonId, tempFilePath);
+		if (File.Exists(tempFilePath))
+		{
+			await Launcher.Default.OpenAsync(tempFilePath);
+		}
+	}
+
+	[RelayCommand]
 	private void DeselectAddonHandler()
 	{
 		_addonFileService.SelectAddonFile(null);
@@ -103,7 +169,6 @@ public partial class AddonEditorViewModel : ObservableObject
 		if (!result) return;
 		SelectedAddon.AddonFile.ResourcePackGuid = Guid.NewGuid().ToString();
 		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
-		// OnPropertyChanged(nameof(SelectedAddon));
 	}
 
 	[RelayCommand]
@@ -115,6 +180,5 @@ public partial class AddonEditorViewModel : ObservableObject
 		if (!result) return;
 		SelectedAddon.AddonFile.BehaviorPackGuid = Guid.NewGuid().ToString();
 		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
-		// OnPropertyChanged(nameof(SelectedAddon));
 	}
 }

@@ -136,4 +136,41 @@ public class AddonFileService
 		addonFileProperties[addonId] = updatedAddonFile;
 		AddonFilePropertiesChanged?.Invoke(this, new AddonFileEventTypes.AddonFilePropertiesChangedEventArgs(addonId, AddonFileEventTypes.EventChangeType.Updated));
 	}
+
+	public void UpdateAddonSrc(AddonFileModel updatedAddonFile)
+	{
+		var addonId = updatedAddonFile.Id;
+
+		if (!addonFileProperties.ContainsKey(addonId))
+		{
+			throw new KeyNotFoundException($"Addon file with ID {addonId} not found.");
+		}
+
+		updatedAddonFile = AddonFileHelper.UpdateAddonFileSrc(updatedAddonFile);
+		AddonFileHelper.SaveAddonFileProperties(updatedAddonFile);
+		addonFileProperties[addonId] = updatedAddonFile;
+		AddonFilePropertiesChanged?.Invoke(this, new AddonFileEventTypes.AddonFilePropertiesChangedEventArgs(addonId, AddonFileEventTypes.EventChangeType.Updated));
+	}
+
+	internal void DownloadAddonFile(Guid addonId, string filePath)
+	{
+		var addonFile = GetAddonFile(addonId);
+
+		if (addonFile == null)
+		{
+			throw new KeyNotFoundException($"Addon file with ID {addonId} not found.");
+		}
+
+		if (File.Exists(filePath))
+		{
+			File.Delete(filePath);
+		}
+
+		ZipFile.CreateFromDirectory(
+			addonFile.SrcPath,
+			filePath,
+			CompressionLevel.Fastest,
+			includeBaseDirectory: false
+		);
+	}
 }

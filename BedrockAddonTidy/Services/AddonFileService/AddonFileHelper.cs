@@ -77,6 +77,12 @@ public class AddonFileHelper
 					warnings.Add($"Resource pack GUID '{addonFile.ResourcePackGuid}' is not unique.");
 			}
 
+			if (!string.IsNullOrEmpty(addonFile.ResourcePackNewFolderName) && addonFile.ResourcePackNewFolderName.Length > 32)
+				warnings.Add("Resource pack folder name exceeds 32 characters. This can lead to issues in Minecraft.");
+
+			if (!string.IsNullOrEmpty(addonFile.BehaviorPackNewFolderName) && addonFile.BehaviorPackNewFolderName.Length > 32)
+				warnings.Add("Behavior pack folder name exceeds 32 characters. This can lead to issues in Minecraft.");
+
 			if (addonFile.ResourcePackDependencyEnabled && string.IsNullOrEmpty(addonFile.BehaviorPackGuid))
 				warnings.Add("Resource pack dependency is enabled but Behavior Pack is missing.");
 
@@ -141,7 +147,7 @@ public class AddonFileHelper
 		try
 		{
 			var addonFilePath = Path.Combine(addonDirectory, AddonFileConstants.ADDON_PROPERTY_FILE_NAME);
-			var json = JsonSerializer.Serialize(addonFile);
+			var json = JsonSerializer.Serialize(addonFile, AddonFileConstants.SERIALIZE_OPTIONS);
 			File.WriteAllText(addonFilePath, json);
 		}
 		catch (Exception ex)
@@ -156,7 +162,7 @@ public class AddonFileHelper
 	{
 
 		// Find all manifest files in the src directory
-		var manifestFiles = Directory.GetFiles(srcDirectory, "manifest.json", SearchOption.AllDirectories);
+		var manifestFiles = Directory.GetFiles(srcDirectory, AddonFileConstants.MANIFEST_FILE_NAME, SearchOption.AllDirectories);
 
 		if (manifestFiles.Length == 0)
 		{
@@ -167,14 +173,14 @@ public class AddonFileHelper
 		{
 			Id = addonId,
 			AddonType = addonType,
+			SrcPath = srcDirectory,
 			ResourcePackGuid = null,
 			UpdateDate = DateTime.UtcNow,
 			ResourcePackFolderName = null,
 			ResourcePackDependencyEnabled = false,
 			BehaviorPackGuid = null,
 			BehaviorPackFolderName = null,
-			BehaviorPackDependencyEnabled = false,
-			BehaviorPackUsingExperimental = false
+			BehaviorPackDependencyEnabled = false
 		};
 
 		for (var i = 0; i < manifestFiles.Length; i++)
@@ -190,7 +196,7 @@ public class AddonFileHelper
 			// Get any pack icon if exists
 			if (string.IsNullOrEmpty(addonFile.ImagePath))
 			{
-				var imagePath = Path.Combine(manifestFileInfo.Directory?.FullName ?? string.Empty, "pack_icon.png");
+				var imagePath = Path.Combine(manifestFileInfo.Directory?.FullName ?? string.Empty, AddonFileConstants.PACK_ICON_FILE_NAME);
 				if (File.Exists(imagePath)) addonFile.ImagePath = imagePath;
 			}
 
@@ -205,27 +211,36 @@ public class AddonFileHelper
 				switch (module.Type.ToLowerInvariant())
 				{
 					case "resources":
-						var resourceManifest = JsonSerializer.Deserialize<ResourcePackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)
+						{
+							var resourceManifest = JsonSerializer.Deserialize<ResourcePackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)
 							?? throw new InvalidOperationException($"Failed to deserialize resource pack manifest: {manifestFileInfo.FullName}");
-						addonFile.ResourcePackGuid = resourceManifest.Header.Uuid;
-						addonFile.ResourcePackVersion = resourceManifest.Header.Version;
-						addonFile.ResourcePackFolderName = manifestParentDirectory;
-						addonFile.ResourcePackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
-						addonFile.ResourcePackDependencyEnabled = resourceManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
-						addonFile.Name ??= resourceManifest.Header.Name;
-						addonFile.Description ??= resourceManifest.Header.Description;
+							addonFile.ResourcePackGuid = resourceManifest.Header.Uuid;
+							addonFile.ResourcePackVersion = new AddonVersion(resourceManifest.Header.Version);
+							addonFile.ResourcePackFolderName = manifestParentDirectory;
+							addonFile.ResourcePackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
+							addonFile.ResourcePackDependencyEnabled = resourceManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
+							addonFile.Name ??= resourceManifest.Header.Name;
+							addonFile.Description ??= resourceManifest.Header.Description;
+						}
 						break;
 					case "data":
-						var behaviorManifest = JsonSerializer.Deserialize<BehaviorPackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)
+						{
+							var behaviorManifest = JsonSerializer.Deserialize<BehaviorPackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)
 							?? throw new InvalidOperationException($"Failed to deserialize behavior pack manifest: {manifestFileInfo.FullName}");
-						addonFile.BehaviorPackGuid = behaviorManifest.Header.Uuid;
-						addonFile.BehaviorPackVersion = behaviorManifest.Header.Version;
-						addonFile.BehaviorPackFolderName = manifestParentDirectory;
-						addonFile.BehaviorPackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
-						addonFile.BehaviorPackDependencyEnabled = behaviorManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
-						addonFile.BehaviorPackUsingExperimental = behaviorManifest.Dependencies.Any(x => !string.IsNullOrWhiteSpace(x.ModuleName) && x.ModuleName.Contains("beta"));
-						addonFile.Name ??= behaviorManifest.Header.Name;
-						addonFile.Description ??= behaviorManifest.Header.Description;
+							addonFile.BehaviorPackGuid = behaviorManifest.Header.Uuid;
+							addonFile.BehaviorPackVersion = new AddonVersion(behaviorManifest.Header.Version);
+							addonFile.BehaviorPackFolderName = manifestParentDirectory;
+							addonFile.BehaviorPackNewFolderName = manifestParentDirectory.Replace(srcDirectory, "").Split(Path.DirectorySeparatorChar).LastOrDefault() ?? string.Empty;
+							addonFile.BehaviorPackDependencyEnabled = behaviorManifest.Dependencies.Any(d => !string.IsNullOrWhiteSpace(d.Uuid));
+							addonFile.Name ??= behaviorManifest.Header.Name;
+							addonFile.Description ??= behaviorManifest.Header.Description;
+							var serverDep = behaviorManifest.Dependencies.FirstOrDefault(x => x.ModuleName == "@minecraft/server");
+							if (serverDep is not null)
+								addonFile.BehaviorPackServerVersion = new AddonVersion(serverDep.Version);
+							var serverUiDep = behaviorManifest.Dependencies.FirstOrDefault(x => x.ModuleName == "@minecraft/server-ui");
+							if (serverUiDep is not null)
+								addonFile.BehaviorPackServerUiVersion = new AddonVersion(serverUiDep.Version);
+						}
 						break;
 					default:
 						break; // Ignore other module types
@@ -282,5 +297,169 @@ public class AddonFileHelper
 		{
 			throw new IOException("Failed to write addon file information.", ex);
 		}
+	}
+
+	public static AddonFileModel UpdateAddonFileSrc(AddonFileModel addonFile)
+	{
+		if (addonFile is null)
+		{
+			throw new ArgumentNullException(nameof(addonFile), "Addon file cannot be null.");
+		}
+
+		if (!string.IsNullOrWhiteSpace(addonFile.ResourcePackFolderName))
+		{
+			// Move folder if needed
+			if (!string.IsNullOrWhiteSpace(addonFile.ResourcePackNewFolderName))
+			{
+				var newPathSplit = addonFile.ResourcePackFolderName.Split(Path.DirectorySeparatorChar)[..^1];
+				var newPath = Path.Combine(string.Join(Path.DirectorySeparatorChar, newPathSplit), addonFile.ResourcePackNewFolderName);
+				if (newPath != addonFile.ResourcePackFolderName)
+				{
+					Directory.Move(addonFile.ResourcePackFolderName, newPath);
+					addonFile.ResourcePackFolderName = newPath;
+				}
+			}
+
+			var resourceManifestPath = Path.Combine(addonFile.ResourcePackFolderName, AddonFileConstants.MANIFEST_FILE_NAME);
+			if (File.Exists(resourceManifestPath))
+			{
+				var resourcePackManifest = JsonSerializer.Deserialize<ResourcePackManifestModel>(
+					File.ReadAllText(resourceManifestPath),
+					AddonFileConstants.SERIALIZE_OPTIONS);
+
+				if (resourcePackManifest is not null)
+				{
+					resourcePackManifest.Header.Name = addonFile.Name ?? resourcePackManifest.Header.Name;
+					resourcePackManifest.Header.Description = addonFile.Description ?? resourcePackManifest.Header.Description;
+					resourcePackManifest.Header.Uuid = addonFile.ResourcePackGuid ?? resourcePackManifest.Header.Uuid;
+					resourcePackManifest.Header.Version = resourcePackManifest.Header.Version is JsonElement versionJsonElement && versionJsonElement.ValueKind == JsonValueKind.String
+						? addonFile.ResourcePackVersion?.ToString() ?? resourcePackManifest.Header.Version
+						: addonFile.ResourcePackVersion?.ToArray() ?? resourcePackManifest.Header.Version;
+
+					if (addonFile.ResourcePackDependencyEnabled && !string.IsNullOrEmpty(addonFile.BehaviorPackGuid))
+					{
+						var dependency = resourcePackManifest.Dependencies.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Uuid));
+						if (dependency is not null)
+						{
+							dependency.Uuid = addonFile.BehaviorPackGuid;
+							dependency.Version = dependency.Version is string
+								? addonFile.BehaviorPackVersion?.ToString() ?? dependency.Version
+								: addonFile.BehaviorPackVersion?.ToArray() ?? dependency.Version;
+						}
+						else
+						{
+							resourcePackManifest.Dependencies.Add(new ResourcePackManifestModel.DependencyData
+							{
+								Uuid = addonFile.BehaviorPackGuid,
+								Version = addonFile.BehaviorPackVersion?.ToArray().AsEnumerable() ?? [1, 0, 0],
+							});
+						}
+					}
+					if (!addonFile.ResourcePackDependencyEnabled)
+					{
+						var dependency = resourcePackManifest.Dependencies.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Uuid));
+						if (dependency is not null)
+						{
+							resourcePackManifest.Dependencies.Remove(dependency);
+						}
+					}
+
+					if (string.IsNullOrEmpty(addonFile.ImagePath) || !File.Exists(addonFile.ImagePath))
+					{
+						var imagePath = Path.Combine(addonFile.ResourcePackFolderName, AddonFileConstants.PACK_ICON_FILE_NAME);
+						if (File.Exists(imagePath)) addonFile.ImagePath = imagePath;
+					}
+
+					// Update behavior pack file
+					File.WriteAllText(
+						Path.Combine(addonFile.ResourcePackFolderName, AddonFileConstants.MANIFEST_FILE_NAME),
+						JsonSerializer.Serialize(resourcePackManifest, AddonFileConstants.SERIALIZE_OPTIONS));
+				}
+			}
+		}
+		if (!string.IsNullOrWhiteSpace(addonFile.BehaviorPackFolderName))
+		{
+			// Move folder if needed
+			if (!string.IsNullOrWhiteSpace(addonFile.BehaviorPackNewFolderName))
+			{
+				var newPathSplit = addonFile.BehaviorPackFolderName.Split(Path.DirectorySeparatorChar)[..^1];
+				var newPath = Path.Combine(string.Join(Path.DirectorySeparatorChar, newPathSplit), addonFile.BehaviorPackNewFolderName);
+				if (newPath != addonFile.BehaviorPackFolderName)
+				{
+					Directory.Move(addonFile.BehaviorPackFolderName, newPath);
+					addonFile.BehaviorPackFolderName = newPath;
+				}
+			}
+
+			var behaviorManifestPath = Path.Combine(addonFile.BehaviorPackFolderName, AddonFileConstants.MANIFEST_FILE_NAME);
+			if (File.Exists(behaviorManifestPath))
+			{
+				var behaviorPackManifest = JsonSerializer.Deserialize<BehaviorPackManifestModel>(
+					File.ReadAllText(behaviorManifestPath),
+					AddonFileConstants.SERIALIZE_OPTIONS);
+
+				if (behaviorPackManifest is not null)
+				{
+					behaviorPackManifest.Header.Name = addonFile.Name ?? behaviorPackManifest.Header.Name;
+					behaviorPackManifest.Header.Description = addonFile.Description ?? behaviorPackManifest.Header.Description;
+					behaviorPackManifest.Header.Uuid = addonFile.BehaviorPackGuid ?? behaviorPackManifest.Header.Uuid;
+
+					behaviorPackManifest.Header.Version = behaviorPackManifest.Header.Version is JsonElement versionJsonElement && versionJsonElement.ValueKind == JsonValueKind.String
+						? addonFile.BehaviorPackVersion?.ToString() ?? behaviorPackManifest.Header.Version
+						: addonFile.BehaviorPackVersion?.ToArray() ?? behaviorPackManifest.Header.Version;
+
+					var serverDep = behaviorPackManifest.Dependencies.FirstOrDefault(x => x.ModuleName == "@minecraft/server");
+					serverDep?.Version = serverDep.Version is JsonElement serverDepJsonElement && serverDepJsonElement.ValueKind == JsonValueKind.String
+							? addonFile.BehaviorPackServerVersion?.ToString() ?? serverDep.Version
+							: addonFile.BehaviorPackServerVersion?.ToArray() ?? serverDep.Version;
+
+					var serverUiDep = behaviorPackManifest.Dependencies.FirstOrDefault(x => x.ModuleName == "@minecraft/server-ui");
+					serverUiDep?.Version = serverUiDep.Version is JsonElement serverDepUiJsonElement && serverDepUiJsonElement.ValueKind == JsonValueKind.String
+							? addonFile.BehaviorPackServerUiVersion?.ToString() ?? serverUiDep.Version
+							: addonFile.BehaviorPackServerUiVersion?.ToArray() ?? serverUiDep.Version;
+
+					if (addonFile.BehaviorPackDependencyEnabled && !string.IsNullOrEmpty(addonFile.ResourcePackGuid))
+					{
+						var dependency = behaviorPackManifest.Dependencies.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Uuid));
+						if (dependency is not null)
+						{
+							dependency.Uuid = addonFile.ResourcePackGuid;
+							dependency.Version = dependency.Version is string
+								? addonFile.ResourcePackVersion?.ToString() ?? dependency.Version
+								: addonFile.ResourcePackVersion?.ToArray() ?? dependency.Version;
+						}
+						else
+						{
+							behaviorPackManifest.Dependencies.Add(new BehaviorPackManifestModel.DependencyData
+							{
+								Uuid = addonFile.ResourcePackGuid,
+								Version = addonFile.ResourcePackVersion?.ToArray().AsEnumerable() ?? [1, 0, 0],
+							});
+						}
+					}
+					if (!addonFile.BehaviorPackDependencyEnabled)
+					{
+						var dependency = behaviorPackManifest.Dependencies.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Uuid));
+						if (dependency is not null)
+						{
+							behaviorPackManifest.Dependencies.Remove(dependency);
+						}
+					}
+
+					if (string.IsNullOrEmpty(addonFile.ImagePath) || !File.Exists(addonFile.ImagePath))
+					{
+						var imagePath = Path.Combine(addonFile.BehaviorPackFolderName, AddonFileConstants.PACK_ICON_FILE_NAME);
+						if (File.Exists(imagePath)) addonFile.ImagePath = imagePath;
+					}
+
+					// Update behavior pack file
+					File.WriteAllText(
+						Path.Combine(addonFile.BehaviorPackFolderName, AddonFileConstants.MANIFEST_FILE_NAME),
+						JsonSerializer.Serialize(behaviorPackManifest, AddonFileConstants.SERIALIZE_OPTIONS));
+				}
+			}
+		}
+
+		return addonFile;
 	}
 }

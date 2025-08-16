@@ -45,12 +45,12 @@
 									Stroke="{Binding AddonWarnings, Converter={StaticResource ArrayLengthWarningBrushConverter}}"
 									StrokeThickness="3"
 									Padding="5"
-									HeightRequest="100">
+									HeightRequest="130">
 									<Grid ColumnDefinitions="*, auto"
 										  Padding="5">
 										<Grid
 											Grid.Column="0"
-											RowDefinitions="*,*,*,*">
+											RowDefinitions="*,*,*,*,*,*">
 											<HorizontalStackLayout Grid.Row="0"
 																   Spacing="5">
 												<Label Text="Name:"
@@ -69,13 +69,29 @@
 											</HorizontalStackLayout>
 											<HorizontalStackLayout Grid.Row="2"
 																   Spacing="5">
-												<Label Text="Experimental:"
+												<Label Text="RP Version:"
+													   FontAttributes="Bold"
+													   VerticalOptions="Center"/>
+												<Label Text="{Binding AddonFile.VersionTextRp}"
+													   VerticalOptions="Center"/>
+											</HorizontalStackLayout>
+											<HorizontalStackLayout Grid.Row="3"
+																   Spacing="5">
+												<Label Text="BP Version:"
+													   FontAttributes="Bold"
+													   VerticalOptions="Center"/>
+												<Label Text="{Binding AddonFile.VersionTextBp}"
+													   VerticalOptions="Center"/>
+											</HorizontalStackLayout>
+											<HorizontalStackLayout Grid.Row="4"
+																   Spacing="5">
+												<Label Text="Experimental API:"
 													   FontAttributes="Bold"
 													   VerticalOptions="Center"/>
 												<Label Text="{Binding AddonFile.BehaviorPackUsingExperimental}"
 													   VerticalOptions="Center"/>
 											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="3"
+											<HorizontalStackLayout Grid.Row="5"
 																   Spacing="5">
 												<Label Text="Author:"
 													   FontAttributes="Bold"

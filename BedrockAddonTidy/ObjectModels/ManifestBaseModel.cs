@@ -1,9 +1,13 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace BedrockAddonTidy.ObjectModels;
 
 public class ManifestBaseModel
 {
+	[JsonExtensionData]
+	public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
 	[JsonPropertyName("header")]
 	public required HeaderData Header { get; set; }
 
@@ -12,6 +16,9 @@ public class ManifestBaseModel
 
 	public class HeaderData
 	{
+		[JsonExtensionData]
+		public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
 		[JsonPropertyName("name")]
 		public string Name { get; set; } = string.Empty;
 
@@ -27,6 +34,9 @@ public class ManifestBaseModel
 
 	public class ModulesModel
 	{
+		[JsonExtensionData]
+		public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
 		[JsonPropertyName("type")]
 		public required string Type { get; set; }
 

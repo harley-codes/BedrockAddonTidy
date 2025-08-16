@@ -8,7 +8,7 @@ public class ArrayLengthWarningBrushConverter : IValueConverter
 	{
 		if (value is not string[] warnings)
 			throw new ArgumentException("Value must be a string array.", nameof(value));
-		return warnings.Length > 0 ? SolidColorBrush.PaleVioletRed : SolidColorBrush.PaleGreen;
+		return warnings.Length > 0 ? SolidColorBrush.Red : SolidColorBrush.Green;
 	}
 
 	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

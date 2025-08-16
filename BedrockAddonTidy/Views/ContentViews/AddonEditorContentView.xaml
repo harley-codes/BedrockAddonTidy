@@ -32,7 +32,7 @@
 			<ScrollView IsVisible="{Binding SelectedAddon, Converter={StaticResource ObjectNullableToBoolConverter}}"
 						Padding="10">
 				<Grid RowDefinitions="Auto,Auto,*"
-					  RowSpacing="10">
+					  RowSpacing="5">
 					<!-- Actions -->
 					<Grid
 						Grid.Row="0"
@@ -63,6 +63,14 @@
 								Text="Save"
 								IsEnabled="{Binding SaveChangesHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"
 								Command="{Binding SaveChangesHandlerCommand}"/>
+							<Button
+								Text="Download"
+								IsEnabled="{Binding DownloadAddonHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"
+								Command="{Binding DownloadAddonHandlerCommand}"/>
+							<Button
+								Text="Minecraft Import"
+								IsEnabled="{Binding MinecraftImportAddonHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"
+								Command="{Binding MinecraftImportAddonHandlerCommand}"/>
 						</HorizontalStackLayout>
 					</Grid>
 					<!-- Errors and Warnings -->
@@ -171,6 +179,58 @@
 										   Margin="0"/>
 								</Border>
 							</VerticalStackLayout>
+							<!-- Version -->
+							<VerticalStackLayout Spacing="10">
+								<Label
+									Text="Version:"
+									FontSize="22"
+									FontFamily="MinecraftFive"/>
+								<HorizontalStackLayout Spacing="10">
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.ResourcePackVersion.Major}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.ResourcePackVersion.Minor}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.ResourcePackVersion.Patch}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+								</HorizontalStackLayout>
+							</VerticalStackLayout>
 							<Grid ColumnDefinitions="Auto,*,65">
 								<Label
 									Grid.Column="0"
@@ -181,22 +241,31 @@
 									Grid.Column="2"
 									IsToggled="{Binding SelectedAddon.AddonFile.ResourcePackDependencyEnabled}"/>
 							</Grid>
+							<!-- Unique ID -->
 							<Grid
 								ColumnSpacing="10"
-								ColumnDefinitions="Auto,Auto,*,Auto">
+								RowSpacing="10"
+								ColumnDefinitions="Auto,*,Auto"
+								RowDefinitions="Auto,Auto">
 								<Label
 									Grid.Column="0"
+									Grid.Row="0"
 									Text="Unique ID:"
 									FontSize="22"
 									FontFamily="MinecraftFive"
 									VerticalOptions="Center"/>
 								<Label
-									Grid.Column="1"
+									Grid.Column="0"
+									Grid.Row="1"
 									Text="{Binding SelectedAddon.AddonFile.ResourcePackGuid}"
 									FontSize="22"
 									VerticalOptions="Center"/>
 								<Button
-									Grid.Column="3"
+									Grid.Column="2"
+									Grid.Row="0"
+									Grid.RowSpan="2"
+									VerticalOptions="Center"
+									HeightRequest="30"
 									Text="New"
 									Command="{Binding NewResourcePackGuidHandlerCommand}"
 									IsEnabled="{Binding NewResourcePackGuidHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"/>
@@ -230,6 +299,58 @@
 										   Margin="0"/>
 								</Border>
 							</VerticalStackLayout>
+							<!-- Version -->
+							<VerticalStackLayout Spacing="10">
+								<Label
+									Text="Version:"
+									FontSize="22"
+									FontFamily="MinecraftFive"/>
+								<HorizontalStackLayout Spacing="10">
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackVersion.Major}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackVersion.Minor}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackVersion.Patch}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"
+											   Keyboard="Numeric"/>
+									</Border>
+								</HorizontalStackLayout>
+							</VerticalStackLayout>
 							<Grid ColumnDefinitions="Auto,*,65">
 								<Label
 									Grid.Column="0"
@@ -240,27 +361,137 @@
 									Grid.Column="2"
 									IsToggled="{Binding SelectedAddon.AddonFile.BehaviorPackDependencyEnabled}"/>
 							</Grid>
+							<!-- Unique ID -->
 							<Grid
 								ColumnSpacing="10"
-								ColumnDefinitions="Auto,Auto,*,Auto">
+								RowSpacing="10"
+								ColumnDefinitions="Auto,*,Auto"
+								RowDefinitions="Auto,Auto">
 								<Label
 									Grid.Column="0"
+									Grid.Row="0"
 									Text="Unique ID:"
 									FontSize="22"
 									FontFamily="MinecraftFive"
 									VerticalOptions="Center"/>
 								<Label
-									Grid.Column="1"
+									Grid.Column="0"
+									Grid.Row="1"
 									Text="{Binding SelectedAddon.AddonFile.BehaviorPackGuid}"
 									FontSize="22"
 									VerticalOptions="Center"/>
 								<Button
-									Grid.Column="3"
+									Grid.Column="2"
+									Grid.Row="0"
+									Grid.RowSpan="2"
+									VerticalOptions="Center"
 									HeightRequest="30"
 									Text="New"
 									Command="{Binding NewBehaviorPackGuidHandlerCommand}"
 									IsEnabled="{Binding NewBehaviorPackGuidHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"/>
 							</Grid>
+							<!-- Server Version -->
+							<VerticalStackLayout
+								Spacing="10"
+								IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackServerVersion, Converter={StaticResource ObjectNullableToBoolConverter}}">
+								<Label
+									Text="Server Dependency Version:"
+									FontSize="22"
+									FontFamily="MinecraftFive"/>
+								<HorizontalStackLayout Spacing="10">
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerVersion.Major}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerVersion.Minor}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerVersion.Patch}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+								</HorizontalStackLayout>
+							</VerticalStackLayout>
+							<!-- Server UI Version -->
+							<VerticalStackLayout
+								Spacing="10"
+								IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackServerUiVersion, Converter={StaticResource ObjectNullableToBoolConverter}}">
+								<Label
+									Text="ServerUI Dependency Version:"
+									FontSize="22"
+									FontFamily="MinecraftFive"/>
+								<HorizontalStackLayout Spacing="10">
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerUiVersion.Major}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerUiVersion.Minor}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+									<Label
+										Text="-"
+										FontSize="14"
+										FontFamily="MinecraftFive"
+										VerticalOptions="Center"/>
+									<Border
+										StrokeThickness="2"
+										StrokeShape="Rectangle"
+										BackgroundColor="Transparent"
+										Padding="0">
+										<Entry Text="{Binding SelectedAddon.AddonFile.BehaviorPackServerUiVersion.Patch}"
+											   Visual="Default"
+											   BackgroundColor="Transparent"
+											   Margin="0"/>
+									</Border>
+								</HorizontalStackLayout>
+							</VerticalStackLayout>
 						</VerticalStackLayout>
 					</VerticalStackLayout>
 				</Grid>

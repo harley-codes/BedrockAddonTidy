@@ -1,6 +1,7 @@
 ﻿using BedrockAddonTidy.Services.AddonFileService;
 using BedrockAddonTidy.ViewModels;
 using BedrockAddonTidy.Views.ContentViews;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 
 namespace BedrockAddonTidy;
@@ -12,6 +13,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
