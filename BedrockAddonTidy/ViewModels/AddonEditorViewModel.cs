@@ -77,6 +77,12 @@ public partial class AddonEditorViewModel : ObservableObject
 		var result = await page.DisplayAlert("Warning", "Are you sure you want to save this addon?", "Continue", "Cancel");
 		if (!result) return;
 		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
+		var warnings = _addonFileService.GetAddonFileValidationWarnings(SelectedAddon.AddonId);
+		if (warnings.Length > 0)
+		{
+			await page.DisplayAlert("Error", $"Changes resulted in errors, only the configuration was saved.", "OK");
+			return;
+		}
 		_addonFileService.UpdateAddonSrc(SelectedAddon.AddonFile);
 	}
 
