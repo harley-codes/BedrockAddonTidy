@@ -41,7 +41,7 @@
 							Grid.Column="0"
 							Spacing="10">
 							<Border Grid.Column="1"
-									HeightRequest="58"
+									HeightRequest="50"
 									StrokeShape="RoundRectangle 5"
 									StrokeThickness="0">
 								<Image Source="{Binding SelectedAddon.AddonFile.ImagePath}"/>
@@ -101,7 +101,7 @@
 					<!-- Editable Fields -->
 					<VerticalStackLayout
 						Grid.Row="2"
-						Spacing="30">
+						Spacing="15">
 						<Label
 							Text="Base Settings"
 							FontSize="24"
@@ -110,7 +110,7 @@
 							Margin="0,0,0,10"/>
 						<Label
 							Text="Pack Name:"
-							FontSize="22"
+							FontSize="18"
 							FontFamily="MinecraftFive"/>
 						<Border
 							StrokeThickness="2"
@@ -124,7 +124,7 @@
 						</Border>
 						<Label
 							Text="Description:"
-							FontSize="22"
+							FontSize="18"
 							FontFamily="MinecraftFive"/>
 						<Border
 							StrokeThickness="2"
@@ -139,7 +139,7 @@
 						</Border>
 						<Label
 							Text="Author:"
-							FontSize="22"
+							FontSize="18"
 							FontFamily="MinecraftFive"/>
 						<Border
 							StrokeThickness="2"
@@ -153,20 +153,20 @@
 						</Border>
 						<!-- Resource Pack Settings -->
 						<VerticalStackLayout
-							Spacing="30"
+							Spacing="15"
 							IsVisible="{Binding SelectedAddon.AddonFile.ResourcePackGuid, Converter={StaticResource StringEmptyToBoolConverter}}">
 							<Label
 								Text="Resource Pack Settings"
 								FontSize="24"
 								TextColor="Green"
 								FontFamily="MinecraftFive"
-								Margin="0,70,0,0"/>
+								Margin="0,30,0,0"/>
 							<VerticalStackLayout
 								Spacing="10"
 								IsVisible="{Binding SelectedAddon.AddonFile.ResourcePackNewFolderName, Converter={StaticResource StringEmptyToBoolConverter}}">
 								<Label
 									Text="Folder Name:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<Border
 									StrokeThickness="2"
@@ -183,7 +183,7 @@
 							<VerticalStackLayout Spacing="10">
 								<Label
 									Text="Version:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<HorizontalStackLayout Spacing="10">
 									<Border
@@ -235,7 +235,7 @@
 								<Label
 									Grid.Column="0"
 									Text="Use Dependency:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<Switch
 									Grid.Column="2"
@@ -251,7 +251,7 @@
 									Grid.Column="0"
 									Grid.Row="0"
 									Text="Unique ID:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"
 									VerticalOptions="Center"/>
 								<Label
@@ -273,20 +273,20 @@
 						</VerticalStackLayout>
 						<!-- Behavior Pack Settings -->
 						<VerticalStackLayout
-							Spacing="30"
+							Spacing="15"
 							IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackGuid, Converter={StaticResource StringEmptyToBoolConverter}}">
 							<Label
 								Text="Behavior Pack Settings"
 								FontSize="24"
 								TextColor="Green"
 								FontFamily="MinecraftFive"
-								Margin="0,70,0,0"/>
+								Margin="0,30,0,0"/>
 							<VerticalStackLayout
 								Spacing="10"
 								IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackNewFolderName, Converter={StaticResource StringEmptyToBoolConverter}}">
 								<Label
 									Text="Folder Name:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<Border
 									StrokeThickness="2"
@@ -303,7 +303,7 @@
 							<VerticalStackLayout Spacing="10">
 								<Label
 									Text="Version:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<HorizontalStackLayout Spacing="10">
 									<Border
@@ -355,7 +355,7 @@
 								<Label
 									Grid.Column="0"
 									Text="Use Dependency:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<Switch
 									Grid.Column="2"
@@ -371,7 +371,7 @@
 									Grid.Column="0"
 									Grid.Row="0"
 									Text="Unique ID:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"
 									VerticalOptions="Center"/>
 								<Label
@@ -396,7 +396,7 @@
 								IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackServerVersion, Converter={StaticResource ObjectNullableToBoolConverter}}">
 								<Label
 									Text="Server Dependency Version:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<HorizontalStackLayout Spacing="10">
 									<Border
@@ -447,7 +447,7 @@
 								IsVisible="{Binding SelectedAddon.AddonFile.BehaviorPackServerUiVersion, Converter={StaticResource ObjectNullableToBoolConverter}}">
 								<Label
 									Text="ServerUI Dependency Version:"
-									FontSize="22"
+									FontSize="18"
 									FontFamily="MinecraftFive"/>
 								<HorizontalStackLayout Spacing="10">
 									<Border
@@ -492,6 +492,43 @@
 									</Border>
 								</HorizontalStackLayout>
 							</VerticalStackLayout>
+						</VerticalStackLayout>
+						<!-- Other -->
+						<VerticalStackLayout Spacing="15">
+							<Label
+								Text="Info"
+								FontSize="24"
+								TextColor="Green"
+								FontFamily="MinecraftFive"
+								Margin="0,30,0,0"/>
+							<Grid
+								ColumnSpacing="10"
+								RowSpacing="10"
+								ColumnDefinitions="Auto,*,Auto"
+								RowDefinitions="Auto,Auto">
+								<Label
+									Grid.Column="0"
+									Grid.Row="0"
+									Text="Bedrock Addon Tidy ID:"
+									FontSize="18"
+									FontFamily="MinecraftFive"
+									VerticalOptions="Center"/>
+								<Label
+									Grid.Column="0"
+									Grid.Row="1"
+									Text="{Binding SelectedAddon.AddonFile.Id}"
+									FontSize="22"
+									VerticalOptions="Center"/>
+								<Button
+									Grid.Column="2"
+									Grid.Row="0"
+									Grid.RowSpan="2"
+									VerticalOptions="Center"
+									HeightRequest="30"
+									Text="Open Folder"
+									Command="{Binding OpenAddonFolderHandlerCommand}"
+									IsEnabled="{Binding OpenAddonFolderHandlerCommand.IsRunning, Converter={StaticResource BoolInvertConverter}, ConverterParameter=invert}"/>
+							</Grid>
 						</VerticalStackLayout>
 					</VerticalStackLayout>
 				</Grid>

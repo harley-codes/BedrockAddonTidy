@@ -45,12 +45,12 @@
 									Stroke="{Binding AddonWarnings, Converter={StaticResource ArrayLengthWarningBrushConverter}}"
 									StrokeThickness="3"
 									Padding="5"
-									HeightRequest="130">
+									HeightRequest="115">
 									<Grid ColumnDefinitions="*, auto"
 										  Padding="5">
 										<Grid
 											Grid.Column="0"
-											RowDefinitions="*,*,*,*,*,*">
+											RowDefinitions="*,*,*,*">
 											<HorizontalStackLayout Grid.Row="0"
 																   Spacing="5">
 												<Label Text="Name:"
@@ -61,21 +61,13 @@
 											</HorizontalStackLayout>
 											<HorizontalStackLayout Grid.Row="1"
 																   Spacing="5">
-												<Label Text="Type:"
-													   FontAttributes="Bold"
-													   VerticalOptions="Center"/>
-												<Label Text="{Binding AddonFile.AddonType}"
-													   VerticalOptions="Center"/>
-											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="2"
-																   Spacing="5">
 												<Label Text="RP Version:"
 													   FontAttributes="Bold"
 													   VerticalOptions="Center"/>
 												<Label Text="{Binding AddonFile.VersionTextRp}"
 													   VerticalOptions="Center"/>
 											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="3"
+											<HorizontalStackLayout Grid.Row="2"
 																   Spacing="5">
 												<Label Text="BP Version:"
 													   FontAttributes="Bold"
@@ -83,20 +75,12 @@
 												<Label Text="{Binding AddonFile.VersionTextBp}"
 													   VerticalOptions="Center"/>
 											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="4"
+											<HorizontalStackLayout Grid.Row="3"
 																   Spacing="5">
 												<Label Text="Experimental API:"
 													   FontAttributes="Bold"
 													   VerticalOptions="Center"/>
 												<Label Text="{Binding AddonFile.BehaviorPackUsingExperimental}"
-													   VerticalOptions="Center"/>
-											</HorizontalStackLayout>
-											<HorizontalStackLayout Grid.Row="5"
-																   Spacing="5">
-												<Label Text="Author:"
-													   FontAttributes="Bold"
-													   VerticalOptions="Center"/>
-												<Label Text="{Binding AddonFile.Author}"
 													   VerticalOptions="Center"/>
 											</HorizontalStackLayout>
 										</Grid>

@@ -3,5 +3,12 @@
     "**/bin": true,
     "**/obj": true
   },
-  "cSpell.words": ["mcaddon", "mcpack", "Mojang", "mscorlib", "Mvvm"]
+  "cSpell.words": [
+    "fustrating",
+    "mcaddon",
+    "mcpack",
+    "Mojang",
+    "mscorlib",
+    "Mvvm"
+  ]
 }

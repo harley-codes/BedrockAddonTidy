@@ -83,6 +83,12 @@ public class AddonFileHelper
 			if (!string.IsNullOrEmpty(addonFile.BehaviorPackNewFolderName) && addonFile.BehaviorPackNewFolderName.Length > 32)
 				warnings.Add("Behavior pack folder name exceeds 32 characters. This can lead to issues in Minecraft.");
 
+			if (!string.IsNullOrEmpty(addonFile.ResourcePackNewFolderName) && !string.IsNullOrEmpty(addonFile.BehaviorPackNewFolderName))
+			{
+				if (addonFile.ResourcePackNewFolderName == addonFile.BehaviorPackNewFolderName)
+					warnings.Add("Resource pack and Behavior pack folder names cannot be the same.");
+			}
+
 			if (addonFile.ResourcePackDependencyEnabled && string.IsNullOrEmpty(addonFile.BehaviorPackGuid))
 				warnings.Add("Resource pack dependency is enabled but Behavior Pack is missing.");
 
@@ -203,7 +209,7 @@ public class AddonFileHelper
 			var manifestFileContent = File.ReadAllText(manifestFileInfo.FullName);
 			var manifestBase = JsonSerializer.Deserialize<ManifestBaseModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS);
 
-			if (manifestBase is null || !manifestBase.Modules.Any(x => x.Type == "resources" || x.Type == "data"))
+			if (manifestBase is null || !manifestBase.Modules.Any(x => x.Type == "resources" || x.Type == "data" || x.Type == "script"))
 				throw new InvalidOperationException($"No required modules found in manifest file: {manifestFileInfo.FullName}");
 
 			foreach (var module in manifestBase.Modules)
@@ -223,6 +229,7 @@ public class AddonFileHelper
 							addonFile.Description ??= resourceManifest.Header.Description;
 						}
 						break;
+					case "script":
 					case "data":
 						{
 							var behaviorManifest = JsonSerializer.Deserialize<BehaviorPackManifestModel>(manifestFileContent, AddonFileConstants.SERIALIZE_OPTIONS)

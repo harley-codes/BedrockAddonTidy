@@ -77,6 +77,7 @@ public partial class AddonEditorViewModel : ObservableObject
 		var result = await page.DisplayAlert("Warning", "Are you sure you want to save this addon?", "Continue", "Cancel");
 		if (!result) return;
 		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
+		_addonFileService.UpdateAddonSrc(SelectedAddon.AddonFile);
 	}
 
 	[RelayCommand]
@@ -180,5 +181,12 @@ public partial class AddonEditorViewModel : ObservableObject
 		if (!result) return;
 		SelectedAddon.AddonFile.BehaviorPackGuid = Guid.NewGuid().ToString();
 		_addonFileService.UpdateAddonFile(SelectedAddon.AddonFile);
+	}
+
+	[RelayCommand]
+	private async Task OpenAddonFolderHandler()
+	{
+		if (SelectedAddon is null) return;
+		await Launcher.Default.OpenAsync(SelectedAddon.AddonFile.SrcPath);
 	}
 }
