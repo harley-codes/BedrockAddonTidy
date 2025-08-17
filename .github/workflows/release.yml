@@ -23,18 +23,34 @@ jobs:
       - name: Build MAUI Windows
         run: dotnet build BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041.0
 
-      - name: Publish MAUI Windows
-        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041.0 -o publish
+      - name: Publish MAUI Windows (Dependant)
+        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -r win-x64 -o publish-dependant /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:SelfContained=false
 
-      - name: Zip Published Files
+      - name: Publish MAUI Windows (Self-Contained)
+        run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -r win-x64 -o publish-self-contained /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true /p:SelfContained=true
+
+      - name: Zip Published Files (Dependant)
         run: |
-          cd publish
-          powershell -Command "Compress-Archive -Path * -DestinationPath ../BedrockAddonTidy-Windows.zip"
+          cd publish-dependant
+          powershell -Command "Compress-Archive -Path * -DestinationPath ../BedrockAddonTidy-Windows-Dependant.zip"
         shell: bash
 
-      - name: Upload Release Asset (ZIP)
+      - name: Zip Published Files (Self-Contained)
+        run: |
+          cd publish-self-contained
+          powershell -Command "Compress-Archive -Path * -DestinationPath ../BedrockAddonTidy-Windows-Self-Contained.zip"
+        shell: bash
+
+      - name: Upload Release Asset (ZIP) (Dependant)
         uses: softprops/action-gh-release@v2
         with:
-          files: BedrockAddonTidy-Windows.zip
+          files: BedrockAddonTidy-Windows-Dependant.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset (ZIP) (Self-Contained)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: BedrockAddonTidy-Windows-Self-Contained.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
