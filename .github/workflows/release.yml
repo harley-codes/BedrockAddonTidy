@@ -26,9 +26,15 @@ jobs:
       - name: Publish MAUI Windows
         run: dotnet publish BedrockAddonTidy/BedrockAddonTidy.csproj -c Release -f:net9.0-windows10.0.19041.0 -o publish
 
-      - name: Upload Release Asset
+      - name: Zip Published Files
+        run: |
+          cd publish
+          powershell -Command "Compress-Archive -Path * -DestinationPath ../BedrockAddonTidy-Windows.zip"
+        shell: bash
+
+      - name: Upload Release Asset (ZIP)
         uses: softprops/action-gh-release@v2
         with:
-          files: publish/**
+          files: BedrockAddonTidy-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
